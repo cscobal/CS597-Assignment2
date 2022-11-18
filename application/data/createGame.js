@@ -5,8 +5,9 @@ const documentClient = new AWS.DynamoDB.DocumentClient();
 const uuidv4 = require("uuid/v4");
 const sendMessage = require("./sendMessage");
 
-
-const createGame = async ({ creator, opponent, size }) => {
+//This might be causing issues and I can't figure out how to include it in the request
+const size = 3;
+const createGame = async ({ creator, opponent}) => {
   const vals = Array.from(Array(size), (_, i) => i + 1)
 
   const dSum = [Array.from(Array((size * 2) + 1), () => new Array(size).fill(0)), Array.from(Array((size * 2) + 1), () => new Array(size).fill(0))]
@@ -16,7 +17,7 @@ const createGame = async ({ creator, opponent, size }) => {
   const params = {
     TableName: 'tic-tac-toe-game',
     Item: {
-      gameId: '5b5ee7d8',
+      gameId: uuidv4().split('-')[0],
       user1: 'userx',
       user2: 'usero',
       size: size,
@@ -39,12 +40,16 @@ const createGame = async ({ creator, opponent, size }) => {
   }
 
   const message = `Hi ${opponent.username}. Your friend ${creator} has invited you to a new game! Your game ID is ${params.Item.gameId}`;
+  console.log(opponent.email)
+  console.log(message)
+  /*
   try {
-    await sendMessage({ phoneNumber: opponent.phoneNumber, message });
+    await sendMessage({ email: opponent.email, message: message, subject: "new game" });
   } catch (error) {
     console.log("Error sending message: ", error.message);
     throw new Error("Could not send message to user");
   }
+  */
 
   return params.Item;
 };
