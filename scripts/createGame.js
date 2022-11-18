@@ -5,22 +5,25 @@ const AWS = require('aws-sdk')
 const documentClient = new AWS.DynamoDB.DocumentClient()
 
 const size = 3
+const vals = Array.from(Array(size), (_, i) => i + 1)
 
 const params = {
-  TableName: 'turn-based-game',
+  TableName: 'tic-tac-toe-game',
   Item: {
     gameId: '5b5ee7d8',
     user1: 'userx',
     user2: 'usero',
     size: size,
-    row: Array(size).fill(0),
-    col: Array(size).fill(0),
-    diag: Array(2).fill(0),
+    tttRow: Array(size).fill(0),
+    tttCol: Array(size).fill(0),
+    tttDiag: Array(2).fill(0),
     previousMoves: [],
-    lastMoveBy: 'userx'
+    lastMoveBy: 'usero',
+    currentValue: [[['x'], vals], [['o'], Array.from(vals, i => -i)]],
+    currMove: [[-1, -1, '=']]
   }
 }
 
 documentClient.put(params).promise()
-  .then(() => console.log('Game added successfully!'))
+  .then((error) => console.log('Game added successfully!'))
   .catch((error) => console.log('Error adding game', error))
