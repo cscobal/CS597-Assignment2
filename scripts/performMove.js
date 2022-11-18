@@ -4,6 +4,7 @@ const AWS = require('aws-sdk')
 const documentClient = new AWS.DynamoDB.DocumentClient()
 
 const performMove = async ({ gameId, user, changedRow, changedCol }) => {
+  
   if (changedRow < 1 || changedCol < 1) {
     throw new Error('Indices ' + changedRow + ', ' + changedCol + ' must be greater than 0')
   }
@@ -12,11 +13,12 @@ const performMove = async ({ gameId, user, changedRow, changedCol }) => {
   }
   
   const attemptMove = [changedRow, changedCol]
-
+ 
   var newDiag = 0
   const diagVal = changedRow + changedCol
   if(changedRow == changedCol) {
     newDiag = "tttDiag[0] + currentValue[0][1][" + (changedRow - 1) + "]"
+    
   } else {
     newDiag = "tttDiag[0]"
   }
@@ -48,11 +50,7 @@ const performMove = async ({ gameId, user, changedRow, changedCol }) => {
     Key: { 
       gameId: gameId
     },
-    
   
-    
-    //previousMoves = list_append(previousMoves, :newMoveAdd), 
-    // AND NOT (contains(previousMoves, :newMove ) OR contains(previousMoves, :newMoveInv ))
     UpdateExpression: `SET lastMoveBy = :user, ${rowInd} = ${rowInd} + ${rowVal}, ${colInd} = ${colInd} + ${colVal}, ${firstDiag} = ${newDiag}, ${secondDiag} = ${calcDiag}, currentValue[0] = currentValue[1], currentValue[1] = currentValue[0], currMove[0] = list_append(:newMove, currentValue[0][0]), previousMoves = list_append(previousMoves, currMove), diagSum[0] = diagSum[1], diagSum[1] = diagSum[0]`,
     ConditionExpression: `(user1 = :user OR user2 = :user) AND lastMoveBy <> :user AND (:absRow <= size AND :absCol <= size) AND NOT (:xCheck = currMove[0] OR :oCheck = currMove[0]) AND NOT (contains(previousMoves, :xCheck) OR contains(previousMoves, :oCheck))`,
     
@@ -63,10 +61,6 @@ const performMove = async ({ gameId, user, changedRow, changedCol }) => {
       ':newMove': attemptMove,
       ':xCheck': moveXCheck,
       ':oCheck': moveOCheck,
- 
-      //':newMoveAdd': [attemptMove],
-      //':newMove': attemptMove,
-      //':newMoveInv': attemptMoveInv
     },
     ReturnValues: 'ALL_NEW'
   }
