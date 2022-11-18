@@ -3,27 +3,7 @@
 const AWS = require('aws-sdk')
 const documentClient = new AWS.DynamoDB.DocumentClient()
 
-const fetchGame = async gameId => {
-  const params = {
-    TableName: "tic-tac-toe-game",
-    Key: {
-      gameId: gameId
-    }
-  };
-
-  try {
-    const game = await documentClient.get(params).promise();
-    return game.Item;
-  } catch (error) {
-    console.log("Error fetching game: ", error.message);
-    throw new Error("Could not fetch game");
-  }
-};
-
 const performMove = async ({ gameId, user, changedRow, changedCol }) => {
-  
-  
-  
   if (changedRow < 1 || changedCol < 1) {
     throw new Error('Indices ' + changedRow + ', ' + changedCol + ' must be greater than 0')
   }
@@ -33,43 +13,27 @@ const performMove = async ({ gameId, user, changedRow, changedCol }) => {
   
   const attemptMove = [changedRow, changedCol]
 
-  
- 
-  /*
-  const newRow = currGame.tttRow
-  newRow[changedRow - 1] += scal * changedRow
-  
-  const newCol = currGame.tttCol
-  newCol[changedCol - 1] += scal * changedCol
-  
-  const newDiag = currGame.tttDiag
-  
+  var newDiag = 0
+  const diagVal = changedRow + changedCol
   if(changedRow == changedCol) {
-    newDiag[0] += scal * changedRow
-    if(changedRow == (currGame.size + 1) / 2) {
-      newDiag[1] += scal * changedRow
-    }
-  } else if (changedRow + changedCol == currGame.size + 1)
-  {
-    newDiag[1] += scal * changedRow
+    newDiag = "tttDiag[0] + currentValue[0][1][" + (changedRow - 1) + "]"
+  } else {
+    newDiag = "tttDiag[0]"
   }
-  */
-  
-  const newRow = [changedRow, -changedRow]
-  const newCol = [changedCol, -changedCol]
-  
 
-  const attemptMoveInv = [...attemptMove]
-  attemptMove.push(1)
-  attemptMoveInv.push(-1)
+  const firstDiag = "tttDiag[0]"
   
+  const secondDiag = "tttDiag[1]"
+
+  const calcDiag = "tttDiag[1] + diagSum[0][" + diagVal + "][" + (changedRow - 1) + "]"
   
+  console.log(calcDiag)
   
-  const rowInd = "tttRow[" + (changedRow - 1) + "]" 
-  const colInd = "tttCol[" + (changedCol - 1) + "]"
+  const rowInd = "tttRow[" + (changedCol - 1) + "]" 
+  const colInd = "tttCol[" + (changedRow - 1) + "]"
   
-  const rowVal = "currentValue[0][1][" + (changedRow - 1) + "]"
-  const colVal = "currentValue[0][1][" + (changedCol - 1) + "]"
+  const rowVal = "currentValue[0][1][" + (changedCol - 1) + "]"
+  const colVal = "currentValue[0][1][" + (changedRow - 1) + "]"
   
   const moveXCheck = [...attemptMove]
   
@@ -78,8 +42,6 @@ const performMove = async ({ gameId, user, changedRow, changedCol }) => {
   moveXCheck.push('x')
   moveOCheck.push('o')
 
-  
-  const mathHolder = "[currentValue[1], currentValue[0]]"
   
   const params = {
     TableName: 'tic-tac-toe-game',
@@ -91,7 +53,7 @@ const performMove = async ({ gameId, user, changedRow, changedCol }) => {
     
     //previousMoves = list_append(previousMoves, :newMoveAdd), 
     // AND NOT (contains(previousMoves, :newMove ) OR contains(previousMoves, :newMoveInv ))
-    UpdateExpression: `SET lastMoveBy = :user, ${rowInd} = ${rowInd} + ${rowVal}, ${colInd} = ${colInd} + ${colVal}, currentValue[0] = currentValue[1], currentValue[1] = currentValue[0], currMove[0] = list_append(:newMove, currentValue[0][0]), previousMoves = list_append(previousMoves, currMove)`,
+    UpdateExpression: `SET lastMoveBy = :user, ${rowInd} = ${rowInd} + ${rowVal}, ${colInd} = ${colInd} + ${colVal}, ${firstDiag} = ${newDiag}, ${secondDiag} = ${calcDiag}, currentValue[0] = currentValue[1], currentValue[1] = currentValue[0], currMove[0] = list_append(:newMove, currentValue[0][0]), previousMoves = list_append(previousMoves, currMove), diagSum[0] = diagSum[1], diagSum[1] = diagSum[0]`,
     ConditionExpression: `(user1 = :user OR user2 = :user) AND lastMoveBy <> :user AND (:absRow <= size AND :absCol <= size) AND NOT (:xCheck = currMove[0] OR :oCheck = currMove[0]) AND NOT (contains(previousMoves, :xCheck) OR contains(previousMoves, :oCheck))`,
     
     ExpressionAttributeValues: {
@@ -100,7 +62,8 @@ const performMove = async ({ gameId, user, changedRow, changedCol }) => {
       ':absCol': changedCol,
       ':newMove': attemptMove,
       ':xCheck': moveXCheck,
-      ':oCheck': moveOCheck
+      ':oCheck': moveOCheck,
+ 
       //':newMoveAdd': [attemptMove],
       //':newMove': attemptMove,
       //':newMoveInv': attemptMoveInv
@@ -115,4 +78,4 @@ const performMove = async ({ gameId, user, changedRow, changedCol }) => {
   }
 };
 
-performMove({ gameId: '5b5ee7d8', user: 'userx', changedRow: 1, changedCol: 3 })
+performMove({ gameId: '5b5ee7d8', user: 'userx', changedRow: 3, changedCol: 3 })
