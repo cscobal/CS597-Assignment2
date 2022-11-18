@@ -16,4 +16,6 @@ Although my system for storing the game data is very neat, both in the structure
 
 
 1:45AM Update:
-As I expected entirely fixing all of the bugs didn't take too much time, small things here and there that caused issues. Implementing in the activity for games ended up taking roughly half the time. Will add functionality for CLI shortly
+As I expected entirely fixing all of the bugs didn't take too much time, small things here and there that caused issues. Implementing in the activity for games ended up taking roughly half the time. Everything but the CLI is now 100% functional
+
+Will add functionality for CLI shortly
