@@ -12,6 +12,7 @@ const params = {
     gameId: '5b5ee7d8',
     user1: 'userx',
     user2: 'usero',
+    size: size,
     row: Array(size).fill(0),
     col: Array(size).fill(0),
     diag: Array(2).fill(0),
