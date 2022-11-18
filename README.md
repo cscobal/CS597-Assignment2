@@ -1,7 +1,7 @@
 Chris Stovall
 
 API Gateway URL
-https://j51elm014c.execute-api.us-west-2.amazonaws.com/prod
+https://6f06x9c5di.execute-api.us-west-2.amazonaws.com/prod
 
 CLI Instructions will be added when completed
 
@@ -13,3 +13,7 @@ However, there are many, many buggy parts that simply stopped working close to t
 
 
 Although my system for storing the game data is very neat, both in the structure and how it functions without needing to fetch the game during updates, if I had instead just done the simple 3x3 array implementation I'm certain I would have completed all this on time.
+
+
+1:45AM Update:
+As I expected entirely fixing all of the bugs didn't take too much time, small things here and there that caused issues. Implementing in the activity for games ended up taking roughly half the time. Will add functionality for CLI shortly
