@@ -49,7 +49,7 @@ const performMove = async ({ gameId, user, changedRow, changedCol }) => {
     },
   
     UpdateExpression: `SET lastMoveBy = :user, ${rowInd} = ${rowInd} + ${rowVal}, ${colInd} = ${colInd} + ${colVal}, ${firstDiag} = ${newDiag}, ${secondDiag} = ${calcDiag}, currentValue[0] = currentValue[1], currentValue[1] = currentValue[0], currMove[0] = list_append(:newMove, currentValue[0][0]), previousMoves = list_append(previousMoves, currMove), diagSum[0] = diagSum[1], diagSum[1] = diagSum[0]`,
-    ConditionExpression: `(user1 = :user OR user2 = :user) AND lastMoveBy <> :user AND (:absRow <= size AND :absCol <= size) AND NOT (:xCheck = currMove[0] OR :oCheck = currMove[0]) AND NOT (contains(previousMoves, :xCheck) OR contains(previousMoves, :oCheck))`,
+    ConditionExpression: `(user1 = :user OR user2 = :user) AND lastMoveBy <> :user AND (:absRow <= game_size AND :absCol <= game_size) AND NOT (:xCheck = currMove[0] OR :oCheck = currMove[0]) AND NOT (contains(previousMoves, :xCheck) OR contains(previousMoves, :oCheck))`,
     
     ExpressionAttributeValues: {
       ':user': user,
