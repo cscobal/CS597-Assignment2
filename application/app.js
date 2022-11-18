@@ -35,7 +35,6 @@ app.post("/users", wrapAsync(async (req, res) => {
     req.body.username,
     req.body.password,
     req.body.email,
-    req.body.phoneNumber
   );
   res.json(user);
 }));
@@ -83,7 +82,7 @@ app.post("/games/:gameId", wrapAsync(async (req, res) => {
   const opponent = await fetchUserByUsername(opponentUsername);
   const mover = {
     username: token['cognito:username'],
-    phoneNumber: token['phone_number']
+    email: token['email']
   }
   await handlePostMoveNotification({ game, mover, opponent })
   res.json(game);
