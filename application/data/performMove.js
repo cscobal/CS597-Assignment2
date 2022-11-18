@@ -2,63 +2,64 @@
 // SPDX-License-Identifier: MIT-0
 const AWS = require('aws-sdk')
 const documentClient = new AWS.DynamoDB.DocumentClient()
-const fetchGame = require("./fetchGame");
 
 const performMove = async ({ gameId, user, changedRow, changedCol }) => {
-  const currGame = fetchGame(gameId)
   
-  const legalMoves = Array.from(Array(size), (_, i) => i + 1);
-  if (!legalMoves.contains(changedRow) || !legalMoves.contains(changedCol)  ) {
-    throw new Error('Indices ' + changedRow + ', ' + changedCol + ' are not valid')
+  if (changedRow < 1 || changedCol < 1) {
+    throw new Error('Indices ' + changedRow + ', ' + changedCol + ' must be greater than 0')
   }
-  
-  const size = currGame.size
-  const prevMoves = currGame.previousMoves
+  if(!Number.isInteger(changedRow) || !Number.isInteger(changedCol)) {
+    throw new Error('Cell indices ' + changedRow + ', ' + changedCol + ' must both be integers')
+  }
   
   const attemptMove = [changedRow, changedCol]
-  
-  if(prevMoves.contains(attemptMove.push(1)) || prevMoves.contains(attemptMove.push(-1)))
-  {
-    throw new Error('Cell ' + changedRow + ', ' + changedCol + ' has already been taken')
-  }
-  const scal = -1
-  if(currGame.user1 == user) {
-    scal = 1
-  }
-  const newRow = currGame.row
-  newRow[changedRow - 1] += scal * changedRow
-  
-  const newCol = currGame.col
-  newCol[changedCol - 1] += scal * changedCol
-  
-  const newDiag = currGame.diag
-  
+ 
+  var newDiag = 0
+  const diagVal = changedRow + changedCol
   if(changedRow == changedCol) {
-    newDiag[0] += scal * changedRow
-    if(changedRow == (size + 1) / 2) {
-      newDiag[1] += scal * changedRow
-    }
-  } else if (changedRow + changedCol == size + 1)
-  {
-    newDiag[1] += scal * changedRow
+    newDiag = "tttDiag[0] + currentValue[0][1][" + (changedRow - 1) + "]"
+    
+  } else {
+    newDiag = "tttDiag[0]"
   }
 
-  prevMoves.push(attemptMove.push(scal))
+  const firstDiag = "tttDiag[0]"
   
-  newRow
+  const secondDiag = "tttDiag[1]"
+
+  const calcDiag = "tttDiag[1] + diagSum[0][" + diagVal + "][" + (changedRow - 1) + "]"
+  
+  const rowInd = "tttRow[" + (changedCol - 1) + "]" 
+  const colInd = "tttCol[" + (changedRow - 1) + "]"
+  
+  const rowVal = "currentValue[0][1][" + (changedCol - 1) + "]"
+  const colVal = "currentValue[0][1][" + (changedRow - 1) + "]"
+  
+  const moveXCheck = [...attemptMove]
+  
+  const moveOCheck = [...attemptMove]
+  
+  moveXCheck.push('x')
+  moveOCheck.push('o')
+  
   const params = {
     TableName: 'tic-tac-toe-game',
     Key: { 
       gameId: gameId
     },
-    UpdateExpression: `SET lastMoveBy = :user, row = :newRow, col = :newCol, diag = :newDiag, previousMoves = :prevMoves`,
-    ConditionExpression: `(user1 = :user OR user2 = :user) AND lastMoveBy <> :user`,
+  
+    UpdateExpression: `SET lastMoveBy = :user, ${rowInd} = ${rowInd} + ${rowVal}, ${colInd} = ${colInd} + ${colVal}, ${firstDiag} = ${newDiag}, ${secondDiag} = ${calcDiag}, currentValue[0] = currentValue[1], currentValue[1] = currentValue[0], currMove[0] = list_append(:newMove, currentValue[0][0]), previousMoves = list_append(previousMoves, currMove), diagSum[0] = diagSum[1], diagSum[1] = diagSum[0]`,
+    ConditionExpression: `(user1 = :user OR user2 = :user) AND lastMoveBy <> :user AND (:absRow <= size AND :absCol <= size) AND NOT (:xCheck = currMove[0] OR :oCheck = currMove[0]) AND NOT (contains(previousMoves, :xCheck) OR contains(previousMoves, :oCheck))`,
+    
     ExpressionAttributeValues: {
       ':user': user,
-      ':newRow': newRow,
-      ':newCol': newCol,
-      ':newDiag': newDiag,
-      ':prevMoves': prevMoves
+      ':absRow': changedRow,
+      ':absCol': changedCol,
+      ':newMove': attemptMove,
+      ':xCheck': moveXCheck,
+      ':oCheck': moveOCheck,
+ 
+
     },
     ReturnValues: 'ALL_NEW'
   }
