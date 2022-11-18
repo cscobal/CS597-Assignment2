@@ -10,7 +10,7 @@ const vals = Array.from(Array(size), (_, i) => i + 1)
 const dSum = [Array.from(Array((size * 2) + 1), () => new Array(size).fill(0)), Array.from(Array((size * 2) + 1), () => new Array(size).fill(0))]
 dSum[0][size + 1] = vals 
 dSum[1][size + 1] = Array.from(vals, i => -i)
-
+console.log(dSum)
 const params = {
   TableName: 'tic-tac-toe-game',
   Item: {
@@ -28,6 +28,8 @@ const params = {
     currMove: [[-1, -1, '=']]
   }
 }
+
+
 
 documentClient.put(params).promise()
   .then((error) => console.log('Game added successfully!'))
