@@ -30,7 +30,8 @@ const validateCreateUser = body => {
 // Request body validation for the POST /games endpoint
 const validateCreateGame = body => {
   const schema = Joi.object().keys({
-    opponent: Joi.string().min(4).max(20).required()
+    opponent: Joi.string().min(4).max(20).required(),
+    size: Joi.number().min(2).integer().required()
   });
 
   const result = Joi.validate(body, schema);
