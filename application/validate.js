@@ -48,8 +48,8 @@ const validateCreateGame = body => {
 // Request body validation for the POST /games/:gameIdendpoint
 const validatePerformMove = body => {
   const schema = Joi.object().keys({
-    changedRow: Joi.number().required,
-    changedCol: Joi.number()
+    changedRow: Joi.number().integer().required,
+    changedCol: Joi.number().integer()
   });
 
   const result = Joi.validate(body, schema);
