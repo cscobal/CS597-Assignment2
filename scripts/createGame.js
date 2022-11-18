@@ -7,6 +7,10 @@ const documentClient = new AWS.DynamoDB.DocumentClient()
 const size = 3
 const vals = Array.from(Array(size), (_, i) => i + 1)
 
+const dSum = [Array.from(Array((size * 2) + 1), () => new Array(size).fill(0)), Array.from(Array((size * 2) + 1), () => new Array(size).fill(0))]
+dSum[0][size + 1] = vals 
+dSum[1][size + 1] = Array.from(vals, i => -i)
+
 const params = {
   TableName: 'tic-tac-toe-game',
   Item: {
@@ -19,6 +23,7 @@ const params = {
     tttDiag: Array(2).fill(0),
     previousMoves: [],
     lastMoveBy: 'usero',
+    diagSum: dSum,
     currentValue: [[['x'], vals], [['o'], Array.from(vals, i => -i)]],
     currMove: [[-1, -1, '=']]
   }
