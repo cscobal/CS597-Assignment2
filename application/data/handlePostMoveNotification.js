@@ -26,15 +26,15 @@ const handlePostMoveNotification = async ({ game, mover, opponent }) => {
     const winnerMessage = `You beat ${mover.username} in a game of tic-tac-toe!`
     const loserMessage = `Ahh, you lost to ${opponent.username} in tic-tac-toe.`
     await Promise.all([
-      sendMessage({ phoneNumber: opponent.phoneNumber, message: winnerMessage }),
-      sendMessage({ phoneNumber: mover.phoneNumber, message: loserMessage })
+      sendMessage({ email: opponent.email, message: winnerMessage }),
+      sendMessage({ email: mover.email, message: loserMessage })
     ])
 
     return
   }
 
   const message = `${mover.username} has moved. It's your turn next in Game ID ${game.gameId}!`
-  await sendMessage({ phoneNumber: opponent.phoneNumber, message })
+  await sendMessage({ email: opponent.email, message })
 };
 
 module.exports = handlePostMoveNotification;
