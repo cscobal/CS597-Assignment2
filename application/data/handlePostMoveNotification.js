@@ -6,9 +6,9 @@ const sendMessage = require('./sendMessage')
 const handlePostMoveNotification = async ({ game, mover, opponent }) => {
   // Handle when game is finished
   
-  const win = false
-  const winAmt = (game.size * (game.size + 1)) / 2;
-  for(let i = 0; i < game.size; i++)
+  var win = false
+  const winAmt = (game.game_size * (game.game_size + 1)) / 2;
+  for(let i = 0; i < game.game_size; i++)
   {
     if(!win && (Math.abs(game.tttRow[i]) == winAmt || Math.abs(game.tttCol[i]) == winAmt))
     {
