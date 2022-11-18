@@ -50,6 +50,7 @@ app.post("/games", wrapAsync(async (req, res) => {
   const game = await createGame({
     creator: token["cognito:username"],
     opponent: opponent,
+    size: req.body.size
   });
   res.json(game);
 }));
