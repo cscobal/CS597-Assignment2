@@ -23,14 +23,37 @@ const handlePostMoveNotification = async ({ game, mover, opponent }) => {
     }
   }
   if (win) {
+    const AWS = require('aws-sdk')
+    const documentClient = new AWS.DynamoDB.DocumentClient()
     const winnerMessage = `You beat ${mover.username} in a game of tic-tac-toe!`
     const loserMessage = `Ahh, you lost to ${opponent.username} in tic-tac-toe.`
-    await Promise.all([
-      sendMessage({ email: opponent.email, message: winnerMessage, subject: "losing" }),
-      sendMessage({ email: mover.email, message: loserMessage, subject: "winning" })
-    ])
 
-    return
+    
+    const params = {
+      TableName: 'tic-tac-toe-game',
+      Key: { 
+        gameId: game.gameId
+      },
+    
+      UpdateExpression: `SET active = :zero`,
+      ConditionExpression: `gameId = :id`,
+      ExpressionAttributeValues: {
+        ':id': game.gameId,
+        ':zero': 0
+      },
+      ReturnValues: 'ALL_NEW'
+    }
+    try {
+      await documentClient.update(params).promise();
+    } catch (error) {
+      console.log("Error ending game: ", error.message);
+      throw new Error("Error deactivating game");
+    }
+    await Promise.all([
+      sendMessage({ email: mover.email, message: winnerMessage, subject: "winning" }),
+      sendMessage({ email: opponent.email, message: loserMessage, subject: "losing" })
+    ])
+    return;
   }
 
   const message = `${mover.username} has moved. It's your turn next in Game ID ${game.gameId}!`
