@@ -3,22 +3,30 @@
 const AWS = require("aws-sdk");
 const ses = new AWS.SES();
 
+
 const sendMessage = async ({ email, message, subject }) => {
-  const params = {
-    Destination: { /* required */
-    ToAddresses: [email]
-    },
-    Message: { /* required */
+  var params = {
+  Destination: { /* required */
+    CcAddresses: [
+        email
+    ],
+    ToAddresses: [
+      email
+    ]
+  },
+  Message: { /* required */
     Body: { /* required */
       Text: {
+       Charset: "UTF-8",
        Data: message
       }
      },
      Subject: {
+      Charset: 'UTF-8',
       Data: subject
      }
     },
-  Source: 'cscobal@gmail.com', /* required */
+    Source: 'cscobal@gmail.com' /* required */
   };
 
   return ses.sendEmail(params).promise();
