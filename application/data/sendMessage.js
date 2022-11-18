@@ -16,10 +16,6 @@ const sendMessage = async ({ email, message, subject }) => {
   },
   Message: { /* required */
     Body: { /* required */
-      Html: {
-       Charset: "UTF-8",
-       Data: "HTML_FORMAT_BODY"
-      },
       Text: {
        Charset: "UTF-8",
        Data: message
