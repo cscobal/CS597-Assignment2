@@ -30,6 +30,7 @@ const validateCreateUser = body => {
 const validateCreateGame = body => {
   const schema = Joi.object().keys({
     opponent: Joi.string().min(4).max(20).required(),
+    size: Joi.number().min(0).max(100).required()
   });
 
   const result = Joi.validate(body, schema);
@@ -47,8 +48,8 @@ const validateCreateGame = body => {
 // Request body validation for the POST /games/:gameIdendpoint
 const validatePerformMove = body => {
   const schema = Joi.object().keys({
-    changedRow: Joi.number().required(),
-    changedCol: Joi.number().required()
+    changedRow: Joi.number().min(0).max(100).required(),
+    changedCol: Joi.number().min(0).max(100).required()
   });
 
   const result = Joi.validate(body, schema);
