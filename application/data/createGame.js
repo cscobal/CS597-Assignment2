@@ -27,7 +27,8 @@ const createGame = async ({ creator, opponent, size}) => {
       lastMoveBy: creator,
       diagSum: dSum,
       currentValue: [[['x'], vals], [['o'], Array.from(vals, i => -i)]],
-      currMove: [[-1, -1, '=']]
+      currMove: [[-1, -1, '=']],
+      active: 1
     }
   };
 
